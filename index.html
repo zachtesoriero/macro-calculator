@@ -5,86 +5,177 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Macro Calculator - The Strength Blueprint</title>
 <style>
-  :root { --bg:#f8f8f8; --fg:#111; --muted:#666; --line:#e6e6e6; }
-  * { box-sizing: border-box; }
-  html, body { height: 100%; margin: 0; }
+  :root {
+    --bg: #f8f8f8;
+    --fg: #111;
+    --muted: #666;
+    --line: #e6e6e6;
+  }
+
   body {
+    margin: 0;
     background: var(--bg);
-    font-family: Arial, Helvetica, sans-serif;
-    padding: 16px;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     display: flex;
     justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 32px 16px;
   }
+
   .wrap {
-    width: 100%;
-    max-width: 720px;
     background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    padding: 20px;
-  }
-  h2,h3 { margin: 0 0 10px; color: var(--fg); }
-  label { display: block; margin: 10px 0 6px; font-weight: bold; font-size: 14px; }
-
-  input, select, button {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 32px;
+    max-width: 900px;
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    font-size: 16px;
   }
-  select { appearance: auto; }
 
-  button {
-    background: #111;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
+  h1 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    text-align: left;
   }
-  .btn-ghost { background: #fff; color: #111; border: 1px solid #ccc; }
 
-  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-  .checkbox { display: flex; align-items: center; gap: 6px; }
+  form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px 24px;
+  }
 
-  .modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
-  .pill {
-    position: relative;
+  label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--fg);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+  }
+
+  input[type="radio"], input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+  }
+
+  .inline {
     display: flex;
     align-items: center;
-    min-height: 44px;
-    padding: 8px 12px 8px 44px;
+    gap: 12px;
+  }
+
+  .row-span-2 {
+    grid-column: 1 / -1;
+  }
+
+  .macro-options {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .macro-options label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: 1px solid var(--line);
-    border-radius: 999px;
-    font-size: 14px;
+    border-radius: 50px;
+    padding: 10px 0;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  .macro-options input {
+    display: none;
+  }
+
+  .macro-options input:checked + label {
+    background: #111;
+    color: #fff;
+    border-color: #111;
+  }
+
+  .buttons {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  button {
+    padding: 12px 32px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid #111;
+    transition: 0.2s;
+    font-weight: 600;
+  }
+
+  .calculate {
+    background: #111;
+    color: #fff;
+  }
+
+  .calculate:hover {
+    background: #222;
+  }
+
+  .reset {
     background: #fff;
-  }
-  .pill input[type=radio] {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    margin: 0;
-    width: 20px;
-    height: 20px;
-    accent-color: #111;
+    color: #111;
   }
 
-  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .card { padding: 12px; border: 1px solid var(--line); border-radius: 10px; text-align: center; }
-  .card .k { font-size: 12px; color: var(--muted); }
-  .card .v { font-size: 20px; font-weight: bold; }
+  .reset:hover {
+    background: #f4f4f4;
+  }
 
-  #results { display: none; margin-top: 16px; border-top: 1px dashed var(--line); padding-top: 16px; }
+  .results {
+    grid-column: 1 / -1;
+    margin-top: 24px;
+    background: #fafafa;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
 
-  @media (max-width: 768px) {
-    .grid { grid-template-columns: 1fr; }
-    .cards { grid-template-columns: 1fr; }
-    .modes { grid-template-columns: 1fr; }
+  .results p {
+    margin: 8px 0;
+    font-size: 1rem;
+  }
+
+  @media (max-width: 600px) {
+    .wrap {
+      padding: 24px 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      grid-template-columns: 1fr;
+    }
+    .buttons {
+      flex-direction: column;
+    }
+    button {
+      width: 100%;
+    }
   }
 </style>
-</head>
+
 <body>
   <div class="wrap">
     <h2>Macro Calculator</h2>
