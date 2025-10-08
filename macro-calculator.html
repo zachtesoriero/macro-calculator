@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Macro Calculator - The Strength Blueprint</title>
+<style>
+  :root { --bg:#f8f8f8; --fg:#111; --muted:#666; --line:#e6e6e6; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg);
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+  }
+  .wrap {
+    width: 100%;
+    max-width: 720px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    padding: 20px;
+  }
+  h2,h3 { margin: 0 0 10px; color: var(--fg); }
+  label { display: block; margin: 10px 0 6px; font-weight: bold; font-size: 14px; }
+
+  input, select, button {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 16px;
+  }
+  select { appearance: auto; }
+
+  button {
+    background: #111;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .btn-ghost { background: #fff; color: #111; border: 1px solid #ccc; }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .checkbox { display: flex; align-items: center; gap: 6px; }
+
+  .modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
+  .pill {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 12px 8px 44px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 14px;
+    background: #fff;
+  }
+  .pill input[type=radio] {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    width: 20px;
+    height: 20px;
+    accent-color: #111;
+  }
+
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .card { padding: 12px; border: 1px solid var(--line); border-radius: 10px; text-align: center; }
+  .card .k { font-size: 12px; color: var(--muted); }
+  .card .v { font-size: 20px; font-weight: bold; }
+
+  #results { display: none; margin-top: 16px; border-top: 1px dashed var(--line); padding-top: 16px; }
+
+  @media (max-width: 768px) {
+    .grid { grid-template-columns: 1fr; }
+    .cards { grid-template-columns: 1fr; }
+    .modes { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>Macro Calculator</h2>
+
+    <div class="grid">
+      <div>
+        <label for="units">Units *</label>
+        <select id="units">
+          <option value="metric" selected>Metric (kg, cm)</option>
+          <option value="imperial">Imperial (lb, ft/in)</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Gender *</label>
+        <div class="row">
+          <label class="checkbox"><input type="checkbox" id="male"> Male</label>
+          <label class="checkbox"><input type="checkbox" id="female"> Female</label>
+        </div>
+      </div>
+
+      <div>
+        <label for="age">Age (years) *</label>
+        <input id="age" type="number" min="12" max="100" />
+      </div>
+
+      <div>
+        <label for="heightCm">Height (cm) *</label>
+        <input id="heightCm" type="number" min="120" max="230" />
+      </div>
+
+      <div>
+        <label for="weightKg">Weight (kg) *</label>
+        <input id="weightKg" type="number" min="35" max="250" />
+      </div>
+
+      <div>
+        <label for="activity">Activity level *</label>
+        <select id="activity">
+          <option value="">Select...</option>
+          <option value="1.2">Sedentary</option>
+          <option value="1.375">Light 1-3 d/wk</option>
+          <option value="1.55">Moderate 3-5 d/wk</option>
+          <option value="1.725">Hard 6-7 d/wk</option>
+          <option value="1.9">Very hard (2 sessions per day)</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="goal">Goal *</label>
+        <select id="goal">
+          <option value="">Select...</option>
+          <option value="maintain">Maintain</option>
+          <option value="lose_0.25">Lose 0.25 kg / week</option>
+          <option value="lose_0.5">Lose 0.5 kg / week</option>
+          <option value="lose_0.75">Lose 0.75 kg / week</option>
+          <option value="lose_1">Lose 1 kg / week</option>
+          <option value="gain_0.25">Gain 0.25 kg / week</option>
+          <option value="gain_0.5">Gain 0.5 kg / week</option>
+          <option value="gain_0.75">Gain 0.75 kg / week</option>
+          <option value="gain_1">Gain 1 kg / week</option>
+        </select>
+      </div>
+    </div>
+
+    <label>Macro display</label>
+    <div class="modes">
+      <label class="pill"><input type="radio" name="mode" value="balanced" checked> Balanced</label>
+      <label class="pill"><input type="radio" name="mode" value="hclf"> High-carb, Low-fat</label>
+      <label class="pill"><input type="radio" name="mode" value="hflc"> High-fat, Low-carb</label>
+    </div>
+
+    <div class="grid" style="margin-top:12px;">
+      <button id="calcBtn" type="button">Calculate</button>
+      <button id="resetBtn" type="button" class="btn-ghost">Reset</button>
+    </div>
+
+    <div id="results">
+      <h3>Daily Targets</h3>
+      <div class="cards">
+        <div class="card"><div class="k">Calories</div><div class="v" id="outCal">-</div></div>
+        <div class="card"><div class="k">Protein</div><div class="v" id="outP">-</div></div>
+        <div class="card"><div class="k">Carbs</div><div class="v" id="outC">-</div></div>
+        <div class="card"><div class="k">Fats</div><div class="v" id="outF">-</div></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const $ = id => document.getElementById(id);
+
+  const male = $('male');
+  const female = $('female');
+  male.addEventListener('change', () => { if (male.checked) female.checked = false; });
+  female.addEventListener('change', () => { if (female.checked) male.checked = false; });
+
+  function getSex() {
+    if (male.checked) return 'male';
+    if (female.checked) return 'female';
+    return null;
+  }
+
+  const dailyDelta = g => ({
+    maintain: 0,
+    'lose_0.25': -275,
+    'lose_0.5': -550,
+    'lose_0.75': -825,
+    'lose_1': -1100,
+    'gain_0.25': 275,
+    'gain_0.5': 550,
+    'gain_0.75': 825,
+    'gain_1': 1100
+  }[g] || 0);
+
+  function calc() {
+    const age = Number($('age').value);
+    const sex = getSex();
+    const heightCm = Number($('heightCm').value);
+    const weightKg = Number($('weightKg').value);
+    const activity = Number($('activity').value);
+    const goal = $('goal').value;
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+
+    if (!age || !sex || !heightCm || !weightKg || !activity || !goal) {
+      alert('Please fill out all fields.');
+      return;
+    }
+
+    const bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * age) + (sex === 'male' ? 5 : -161);
+    const tdee = bmr * activity;
+    const targetCalories = Math.max(0, tdee + dailyDelta(goal));
+
+    let protein = 2 * weightKg;
+    let fat = 0.8 * weightKg;
+    if (mode === 'hclf') fat = 0.6 * weightKg;
+    if (mode === 'hflc') fat = 1.0 * weightKg;
+
+    const kcalP = protein * 4;
+    const kcalF = fat * 9;
+    let carbsKcal = targetCalories - (kcalP + kcalF);
+    const carbs = Math.max(0, carbsKcal / 4);
+
+    $('outCal').textContent = Math.round(targetCalories) + ' kcal';
+    $('outP').textContent = Math.round(protein) + ' g';
+    $('outC').textContent = Math.round(carbs) + ' g';
+    $('outF').textContent = Math.round(fat) + ' g';
+
+    $('results').style.display = 'block';
+    $('results').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function resetForm() {
+    document.querySelectorAll('input, select').forEach(el => {
+      if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
+      else el.value = '';
+    });
+    $('results').style.display = 'none';
+    ['outCal', 'outP', 'outC', 'outF'].forEach(id => $(id).textContent = '-');
+  }
+
+  $('calcBtn').addEventListener('click', calc);
+  $('resetBtn').addEventListener('click', resetForm);
+});
+</script>
+</body>
+</html>
